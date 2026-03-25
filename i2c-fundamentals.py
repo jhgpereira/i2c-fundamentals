@@ -13,23 +13,23 @@ def _(mo):
 
     Neste notebook, você vai:
 
-    1. **Compreender o propósito do protocolo**:
-        1.1 O que é I²C?
-        1.2 Porque surgiu?
-        1.3 Quais problemas resolve?
+    1. **Compreender o propósito do protocolo**:  
+        1.1 O que é I²C?  
+        1.2 Porque surgiu?  
+        1.3 Quais problemas resolve?  
 
-    2. **Entender os fundamentos**:
-        2.1 Linhas de barramento: SDA e SCL;
-        2.2 Papeis no barramento: Controlador e dispositivos;
-        2.3 Eventos especiais: idle, START e STOP;
-        2.4 Estrutura do quadro: Endereço, bit R/W, ACK, dados.
+    2. **Entender os fundamentos**:  
+        2.1 Linhas de barramento: SDA e SCL;  
+        2.2 Papeis no barramento: Controlador e dispositivos;  
+        2.3 Eventos especiais: idle, START e STOP;  
+        2.4 Estrutura do quadro: Endereço, bit R/W, ACK, dados.  
 
-    4. **Implementar e visualizar um quadro I²C**
-        3.1 Construção do tempo discreto;
-        3.2 Geração de sinais SDA e SCL;
-        3.3 Modelagem de START, bits, ACK e STOP;
-        3.4 Plot das formas de onda;
-        3.5 Leitura técnica do quadro gerado;
+    4. **Implementar e visualizar um quadro I²C**  
+        3.1 Construção do tempo discreto;  
+        3.2 Geração de sinais SDA e SCL;  
+        3.3 Modelagem de START, bits, ACK e STOP;  
+        3.4 Plot das formas de onda;  
+        3.5 Leitura técnica do quadro gerado;  
     """)
     return
 
@@ -41,15 +41,15 @@ def _(mo):
     ## Parte 1: Compreender o propósito do protocolo
 
     ### 1.1 O que é I²C?
-    [span_0](start_span)[span_1](start_span)O I²C (**Inter-Integrated Circuit**) é um sistema de barramento de dois fios, consistindo em uma linha de **clock** (SCL) e uma linha de **dados** (SDA)[span_0](end_span)[span_1](end_span). [span_2](start_span)Ele foi projetado para interconectar diversas "estações", como microcomputadores, memórias, sensores e dispositivos de E/S[span_2](end_span).
+    O I²C (**Inter-Integrated Circuit**) é um sistema de barramento de dois fios, consistindo em uma linha de **clock** (SCL) e uma linha de **dados** (SDA). Ele foi projetado para interconectar diversas "estações", como microcomputadores, memórias, sensores e dispositivos de E/S.
 
     ### 1.2 Por que surgiu?
-    [span_3](start_span)O protocolo surgiu da necessidade de permitir que uma única linha de dois fios interconectasse um número ilimitado de estações de forma confiável[span_3](end_span). [span_4](start_span)Antes dele, sistemas comuns transportavam dados em apenas uma direção ou exigiam barramentos paralelos complexos[span_4](end_span).
+    O protocolo surgiu da necessidade de permitir que uma única linha de dois fios interconectasse um número ilimitado de estações de forma confiável. Antes dele, sistemas comuns transportavam dados em apenas uma direção ou exigiam barramentos paralelos complexos.
 
     ### 1.3 Quais problemas resolve?
-    * **[span_5](start_span)Redução de fiação:** Substitui barramentos complexos por apenas dois fios[span_5](end_span).
-    * **[span_6](start_span)[span_7](start_span)Conflitos de barramento:** Resolve disputas através de um mecanismo de **arbitragem**, permitindo que múltiplos mestres tentem usar o barramento simultaneamente sem corromper os dados[span_6](end_span)[span_7](end_span).
-    * **[span_8](start_span)[span_9](start_span)Sincronização:** Permite que dispositivos com velocidades diferentes (frequências de clock distintas) se comuniquem, pois o clock é controlado pelo mestre e sincronizado entre as estações[span_8](end_span)[span_9](end_span).
+    * **Redução de fiação:** Substitui barramentos complexos por apenas dois fios.
+    * **Conflitos de barramento:** Resolve disputas através de um mecanismo de **arbitragem**, permitindo que múltiplos mestres tentem usar o barramento simultaneamente sem corromper os dados.
+    * **Sincronização:** Permite que dispositivos com velocidades diferentes (frequências de clock distintas) se comuniquem, pois o clock é controlado pelo mestre e sincronizado entre as estações.
     """)
     return
 
@@ -62,28 +62,28 @@ def _(mo):
 
     
     ### 2.1 Linhas de barramento: SDA e SCL
-    [span_10](start_span)[span_11](start_span)O barramento I²C utiliza uma lógica de **"AND cabeado"** (wired-AND)[span_10](end_span)[span_11](end_span).
-    * **[span_12](start_span)SCL (Serial Clock):** Transporta o sinal de sincronização[span_12](end_span).
-    * **[span_13](start_span)SDA (Serial Data):** Transporta os bits de dados[span_13](end_span).
-    * **[span_14](start_span)[span_15](start_span)Pull-up Resistors:** Ambos os fios são conectados a uma tensão positiva ($V_{DD}$) através de resistores, que mantêm a linha em nível **ALTO** na ausência de sinal[span_14](end_span)[span_15](end_span).
+    O barramento I²C utiliza uma lógica de **"AND cabeado"** (wired-AND).
+    * **SCL (Serial Clock):** Transporta o sinal de sincronização.
+    * **SDA (Serial Data):** Transporta os bits de dados.
+    * **Pull-up Resistors:** Ambos os fios são conectados a uma tensão positiva V_{DD} através de resistores, que mantêm a linha em nível **ALTO** na ausência de sinal.
 
     ### 2.2 Papéis no barramento
-    * **[span_16](start_span)[span_17](start_span)Mestre (Master):** A estação que inicia a transferência, gera o sinal de clock e termina a comunicação[span_16](end_span)[span_17](end_span).
-    * **[span_18](start_span)Escravo (Slave):** A estação que é endereçada e controlada pelo mestre[span_18](end_span).
-    * **[span_19](start_span)[span_20](start_span)Transmissor vs Receptor:** Uma estação pode mudar de papel; por exemplo, um mestre pode enviar dados (transmissor) e depois aguardar uma resposta de um escravo (receptor)[span_19](end_span)[span_20](end_span).
+    * **Mestre (Master):** A estação que inicia a transferência, gera o sinal de clock e termina a comunicação.
+    * **Escravo (Slave):** A estação que é endereçada e controlada pelo mestre.
+    * **Transmissor vs Receptor:** Uma estação pode mudar de papel; por exemplo, um mestre pode enviar dados (transmissor) e depois aguardar uma resposta de um escravo (receptor).
 
     ### 2.3 Eventos especiais: Idle, START e STOP
-    [span_21](start_span)A detecção desses estados é fundamental para que as estações saibam quando o barramento está livre ou ocupado[span_21](end_span).
-    * **[span_22](start_span)[span_23](start_span)Idle (Livre):** Ambas as linhas (SDA e SCL) permanecem em nível **ALTO**[span_22](end_span)[span_23](end_span).
-    * **[span_24](start_span)[span_25](start_span)START:** Ocorre quando a linha SDA passa de **ALTO para BAIXO** enquanto a linha SCL está em **ALTO**[span_24](end_span)[span_25](end_span).
-    * **[span_26](start_span)[span_27](start_span)STOP:** Ocorre quando a linha SDA passa de **BAIXO para ALTO** enquanto a linha SCL está em **ALTO**[span_26](end_span)[span_27](end_span).
+    A detecção desses estados é fundamental para que as estações saibam quando o barramento está livre ou ocupado.
+    * **Idle (Livre):** Ambas as linhas (SDA e SCL) permanecem em nível **ALTO**.
+    * **START:** Ocorre quando a linha SDA passa de **ALTO para BAIXO** enquanto a linha SCL está em **ALTO**.
+    * **STOP:** Ocorre quando a linha SDA passa de **BAIXO para ALTO** enquanto a linha SCL está em **ALTO**.
 
     
     ### 2.4 Estrutura do quadro
-    [span_28](start_span)Os dados são enviados em pacotes de **8 bits** (1 byte)[span_28](end_span).
-    * **[span_29](start_span)Endereço:** Geralmente possui **7 bits**, permitindo identificar qual escravo deve responder[span_29](end_span).
-    * **[span_30](start_span)Bit R/W:** Define se a operação é de escrita (0) ou leitura (1)[span_30](end_span).
-    * **[span_31](start_span)ACK (Acknowledge):** Após cada byte, o receptor deve enviar um 9º bit puxando a linha SDA para **BAIXO** para confirmar o recebimento[span_31](end_span).
+    Os dados são enviados em pacotes de **8 bits** (1 byte).
+    * **Endereço:** Geralmente possui **7 bits**, permitindo identificar qual escravo deve responder.
+    * **Bit R/W:** Define se a operação é de escrita (0) ou leitura (1).
+    * **ACK (Acknowledge):** Após cada byte, o receptor deve enviar um 9º bit puxando a linha SDA para **BAIXO** para confirmar o recebimento.
     """)
     return
 
@@ -97,7 +97,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=False)
 def _():
     # célula 1: Importações
     import marimo as mo
@@ -108,7 +108,7 @@ def _():
     return mo, np, plt
 
 
-@app.cell
+@app.cell(hode_code=False)
 def _(np, plt):
     # Time axis
     t = np.linspace(0, 10, 1000)
