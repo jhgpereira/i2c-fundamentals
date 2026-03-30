@@ -1,7 +1,7 @@
 # i2c-fundamentals
 Introductory guide to Inter-Integrated Circuits (I²C) fundamentals using python.
 
-[![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/jhgpereira/i2c-fundamentals)
+[![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/jhgpereira/i2c-fundamentals/blob/main/i2c-fundamentals.py)
 
 ---
 
